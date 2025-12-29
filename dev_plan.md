@@ -1,0 +1,3 @@
+1. implement various feature extraction functions that work on `&[f64]`. starting from features implemented in [tsfresh](https://tsfresh.readthedocs.io/en/v0.21.0/text/list_of_features.html)
+2. write a thin wrapper to apply extraction functions to each column of a Polars Dataframe
+3. provide a Python binding that uses [pyo3-polars](https://github.com/pola-rs/polars/tree/main/pyo3-polars)

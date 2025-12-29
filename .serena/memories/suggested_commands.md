@@ -50,6 +50,18 @@ head <file>                  # Show first lines of file
 tail <file>                  # Show last lines of file
 ```
 
+## Serena Code Analysis Tools
+```bash
+serena_get_symbols_overview <file>          # Get file structure overview
+serena_find_symbol <name>                   # Locate functions/classes
+serena_find_referencing_symbols <symbol>    # Find symbol dependencies
+serena_search_for_pattern <pattern>         # Flexible pattern search
+serena_replace_symbol_body <symbol>         # Precise symbol editing
+serena_list_dir <path>                      # Directory exploration
+serena_write_memory <name> <content>        # Store project knowledge
+serena_read_memory <name>                   # Retrieve stored knowledge
+```
+
 ## Pre-commit Checklist
 Before committing, run:
 ```bash

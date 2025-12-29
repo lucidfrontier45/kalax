@@ -8,6 +8,11 @@ Before marking a task as complete or committing changes, ensure:
 - [ ] Run `cargo test` to ensure all tests pass
 - [ ] Run `cargo doc` to generate documentation
 
+## Serena Tool Usage
+- [ ] Use Serena tools for code analysis (prefer `serena_get_symbols_overview`, `serena_find_symbol` over basic file operations)
+- [ ] Update Serena memories when project conventions change
+- [ ] Use `serena_write_memory` to store important project knowledge
+
 ## Import Style Verification
 - [ ] Verify no glob imports (`use crate::*`) except for preludes
 - [ ] Check import grouping follows VSCode settings (plain prefix, grouped by crate)

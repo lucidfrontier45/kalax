@@ -81,6 +81,7 @@ use super::common::{validate_input, Error};
 - Minimize allocations in hot paths
 - Use iterators where possible
 - Consider cache efficiency for numerical computations
+- use `ndarray::ArrayView1` if necessary.
 
 ## Code Organization
 

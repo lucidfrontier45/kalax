@@ -120,7 +120,7 @@ use super::common::{validate_input, Error};
 - Write unit tests for all public functions
 - Use descriptive test names (e.g., `test_calculate_mean_with_empty_slice`)
 - Test edge cases (empty inputs, boundary values)
-- Use `assert_eq!` for value comparisons
+- Use `assert_float_eq!` for floating-point comparisons (defined in `test_utils.rs`)
 - Test error conditions appropriately
 
 ### Type Safety

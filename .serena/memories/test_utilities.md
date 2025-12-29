@@ -1,0 +1,1 @@
+The assert_float_eq! macro in src/test_utils.rs is used for floating-point comparisons in unit tests. It checks if the absolute difference between two f64 values is within a tolerance (default 1e-10, or custom). Usage: assert_float_eq!(actual, expected) or assert_float_eq!(actual, expected, tolerance).

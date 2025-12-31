@@ -1,19 +1,8 @@
-/// Calculates the absolute energy of the time series, which is the sum of squared values.
-pub fn absolute_energy(series: &[f64]) -> f64 {
-    series.iter().map(|&x| x * x).sum()
-}
-
-/// Calculates the highest absolute value in the time series.
 pub fn absolute_maximum(series: &[f64]) -> f64 {
     series
         .iter()
         .map(|&x| x.abs())
         .fold(f64::NEG_INFINITY, f64::max)
-}
-
-/// Calculates the sum of absolute changes between consecutive values in the time series.
-pub fn absolute_sum_of_changes(series: &[f64]) -> f64 {
-    series.windows(2).map(|w| (w[1] - w[0]).abs()).sum()
 }
 
 pub fn mean(series: &[f64]) -> f64 {

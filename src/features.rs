@@ -1,1 +1,1 @@
-pub mod statistical;
+pub mod minimal;

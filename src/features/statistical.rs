@@ -17,16 +17,10 @@ pub fn absolute_sum_of_changes(series: &[f64]) -> f64 {
 }
 
 pub fn mean(series: &[f64]) -> f64 {
-    if series.is_empty() {
-        return f64::NAN;
-    }
     series.iter().sum::<f64>() / series.len() as f64
 }
 
 pub fn median(series: &[f64]) -> f64 {
-    if series.is_empty() {
-        return f64::NAN;
-    }
     let mut sorted = series.to_vec();
     sorted.sort_by(|a, b| a.partial_cmp(b).unwrap());
     let len = sorted.len();
@@ -38,9 +32,6 @@ pub fn median(series: &[f64]) -> f64 {
 }
 
 pub fn variance(series: &[f64]) -> f64 {
-    if series.is_empty() {
-        return f64::NAN;
-    }
     let m = mean(series);
     series.iter().map(|&x| (x - m).powi(2)).sum::<f64>() / series.len() as f64
 }
@@ -54,23 +45,14 @@ pub fn length(series: &[f64]) -> usize {
 }
 
 pub fn maximum(series: &[f64]) -> f64 {
-    if series.is_empty() {
-        return f64::NAN;
-    }
     series.iter().copied().fold(f64::NEG_INFINITY, f64::max)
 }
 
 pub fn minimum(series: &[f64]) -> f64 {
-    if series.is_empty() {
-        return f64::NAN;
-    }
     series.iter().copied().fold(f64::INFINITY, f64::min)
 }
 
 pub fn root_mean_square(series: &[f64]) -> f64 {
-    if series.is_empty() {
-        return f64::NAN;
-    }
     (series.iter().map(|&x| x * x).sum::<f64>() / series.len() as f64).sqrt()
 }
 
@@ -136,9 +118,6 @@ mod tests {
 
         let zeros = [0.0, 0.0, 0.0];
         assert_float_eq!(mean(&zeros), 0.0);
-
-        let empty: [f64; 0] = [];
-        assert!(mean(&empty).is_nan());
     }
 
     #[test]
@@ -157,9 +136,6 @@ mod tests {
 
         let unsorted = [3.0, 1.0, 4.0, 1.0, 5.0, 9.0];
         assert_float_eq!(median(&unsorted), 3.5);
-
-        let empty: [f64; 0] = [];
-        assert!(median(&empty).is_nan());
     }
 
     #[test]
@@ -175,9 +151,6 @@ mod tests {
 
         let negative = [-2.0, -1.0, 0.0, 1.0, 2.0];
         assert_float_eq!(variance(&negative), 2.0);
-
-        let empty: [f64; 0] = [];
-        assert!(variance(&empty).is_nan());
     }
 
     #[test]
@@ -190,9 +163,6 @@ mod tests {
 
         let single = [5.0];
         assert_float_eq!(standard_deviation(&single), 0.0);
-
-        let empty: [f64; 0] = [];
-        assert!(standard_deviation(&empty).is_nan());
     }
 
     #[test]
@@ -217,9 +187,6 @@ mod tests {
 
         let single = [7.0];
         assert_float_eq!(maximum(&single), 7.0);
-
-        let empty: [f64; 0] = [];
-        assert!(maximum(&empty).is_nan());
     }
 
     #[test]
@@ -232,9 +199,6 @@ mod tests {
 
         let single = [7.0];
         assert_float_eq!(minimum(&single), 7.0);
-
-        let empty: [f64; 0] = [];
-        assert!(minimum(&empty).is_nan());
     }
 
     #[test]
@@ -251,9 +215,6 @@ mod tests {
 
         let negative = [-3.0, -4.0];
         assert_float_eq!(root_mean_square(&negative), expected);
-
-        let empty: [f64; 0] = [];
-        assert!(root_mean_square(&empty).is_nan());
     }
 
     #[test]

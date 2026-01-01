@@ -5,3 +5,7 @@ edition = "2024"
 
 [dependencies]
 ndarray = "0.17.1"
+polars = { version = "0.52.0", default-features = false }
+
+[dev-dependencies]
+polars = "0.52.0"

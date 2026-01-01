@@ -154,6 +154,7 @@ src/
 - Group related functionality into modules
 - Use clear module boundaries
 - Re-export important items in `lib.rs`
+- **NEVER use `mod.rs` files** - Prefer directory-style modules with `directory_name.rs` files instead
 
 ### Feature Extraction Patterns
 

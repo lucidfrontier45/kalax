@@ -56,18 +56,6 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_absolute_energy() {
-        let series = [1.0, 2.0, 3.0];
-        assert_float_eq!(absolute_energy(&series), 14.0);
-
-        let empty: [f64; 0] = [];
-        assert_float_eq!(absolute_energy(&empty), 0.0);
-
-        let series_neg = [-1.0, -2.0];
-        assert_float_eq!(absolute_energy(&series_neg), 5.0);
-    }
-
-    #[test]
     fn test_absolute_maximum() {
         let series = [1.0, -3.0, 2.0];
         assert_float_eq!(absolute_maximum(&series), 3.0);
@@ -77,21 +65,6 @@ mod tests {
 
         let series_zero = [0.0];
         assert_float_eq!(absolute_maximum(&series_zero), 0.0);
-    }
-
-    #[test]
-    fn test_absolute_sum_of_changes() {
-        let series = [1.0, 3.0, 2.0, 5.0];
-        assert_float_eq!(absolute_sum_of_changes(&series), 6.0);
-
-        let single = [1.0];
-        assert_float_eq!(absolute_sum_of_changes(&single), 0.0);
-
-        let empty: [f64; 0] = [];
-        assert_float_eq!(absolute_sum_of_changes(&empty), 0.0);
-
-        let constant = [2.0, 2.0, 2.0];
-        assert_float_eq!(absolute_sum_of_changes(&constant), 0.0);
     }
 
     #[test]

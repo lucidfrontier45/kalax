@@ -62,6 +62,10 @@ use super::common::{validate_input, Error};
 - Use markdown in doc comments
 - Include examples for complex functions
 - Document parameters, return values, and panics
+- Document all public APIs with `///` comments
+- Use markdown in doc comments
+- Include examples for complex functions
+- Document parameters, return values, and panics
 
 ## Testing
 - Write unit tests for all public functions
@@ -101,6 +105,7 @@ src/
 - Group related functionality into modules
 - Use clear module boundaries
 - Re-export important items in `lib.rs`
+- **NEVER use `mod.rs` files** - Prefer directory-style modules with `directory_name.rs` files instead
 
 ## Formatting & Linting
 - Format on save enabled in VSCode (rustfmt defaults)

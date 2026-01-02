@@ -63,7 +63,7 @@ pub fn extract_features(
         validate_and_prepare_dataframe(&df, column_id, column_sort)?;
 
     // 2. Get partitioned DataFrames by ID
-    let partitions = get_partitioned_dataframes(&validated_df, column_id)?;
+    let partitions = get_partitioned_dataframes(validated_df, column_id)?;
 
     // 3. Process each partition and extract features
     let mut group_results = Vec::new();
@@ -107,14 +107,18 @@ mod tests {
         assert_eq!(result_df.height(), 2); // 2 groups (A and B)
 
         // Check that ID column exists
-        assert!(result_df.get_column_names().contains(&"id"));
+        assert!(
+            result_df
+                .get_column_names()
+                .contains(&&PlSmallStr::from_str("id"))
+        );
 
         // Check that feature columns follow naming convention
         let columns = result_df.get_column_names();
         let feature_columns: Vec<&str> = columns
             .iter()
             .filter(|&&col| col != "id")
-            .copied()
+            .map(|&col| col.as_str())
             .collect();
 
         // Should have features for both value1 and value2

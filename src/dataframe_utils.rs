@@ -74,7 +74,7 @@ pub fn validate_and_prepare_dataframe(
 ///
 /// Returns error if partitioning fails
 pub fn get_partitioned_dataframes(
-    df: &DataFrame,
+    df: DataFrame,
     column_id: &str,
 ) -> Result<Vec<(String, DataFrame)>, Box<dyn std::error::Error>> {
     // Get unique ID values first
@@ -88,13 +88,15 @@ pub fn get_partitioned_dataframes(
 
     let mut result = Vec::new();
 
+    let df = df.lazy();
+
+    //TODO current implementation is a simple filtering, later we will use searchsorted partitions for performance
     for id_value in id_values {
-        let id_str = id_value.to_string();
-
         // Filter DataFrame for this specific ID value
-        let filtered_df = df.filter(&df.column(column_id)?.str()?.equal(id_value))?;
+        let expr = col(column_id).eq(lit(id_value.clone()));
+        let filtered_df = df.clone().filter(expr).collect()?;
 
-        result.push((id_str, filtered_df));
+        result.push((id_value, filtered_df));
     }
 
     Ok(result)
@@ -215,7 +217,7 @@ pub fn assemble_result_dataframe(
 
     // Create ID column
     let id_values: Vec<String> = group_results.iter().map(|(id, _)| id.clone()).collect();
-    let id_series = Series::new(column_id.into(), id_values);
+    let id_series = Column::from(Series::new(column_id.into(), id_values));
 
     // Create feature columns
     let mut columns = vec![id_series];
@@ -233,16 +235,17 @@ pub fn assemble_result_dataframe(
             .collect();
 
         let feature_series = Series::new(feature_name.into(), feature_values);
-        columns.push(feature_series);
+        let column = Column::from(feature_series);
+        columns.push(column);
     }
 
-    Ok(DataFrame::new(columns)?.into())
+    let result_df = DataFrame::new(columns)?;
+    Ok(result_df)
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use polars::prelude::*;
 
     #[test]
     fn test_validate_and_prepare_dataframe_success() {
@@ -294,7 +297,7 @@ mod tests {
         )
         .unwrap();
 
-        let result = get_partitioned_dataframes(&df, "id");
+        let result = get_partitioned_dataframes(df, "id");
         assert!(result.is_ok());
 
         let partitions = result.unwrap();
@@ -375,9 +378,10 @@ mod tests {
         assert_eq!(df.height(), 2); // 2 groups
 
         let columns = df.get_column_names();
-        assert!(columns.contains(&"id"));
-        assert!(columns.contains(&"value1__mean"));
-        assert!(columns.contains(&"value1__length"));
+        for target in ["id", "value1__mean", "value1__length"] {
+            let small_str = PlSmallStr::from_str(target);
+            assert!(columns.contains(&&small_str));
+        }
     }
 
     #[test]

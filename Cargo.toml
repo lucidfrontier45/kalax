@@ -5,7 +5,10 @@ edition = "2024"
 
 [dependencies]
 ndarray = "0.17.1"
-polars = { version = "0.52.0", features = [
+polars = { version = "0.52.0", default-features = false, features = [
     "lazy",
     "timezones", # temporally add timezones feature to avoid issue https://github.com/pola-rs/polars/issues/25148
 ] }
+
+[dev-dependencies]
+polars = "0.52.0"

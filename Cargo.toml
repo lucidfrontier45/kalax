@@ -11,4 +11,6 @@ polars = { version = "0.52.0", default-features = false, features = [
 ] }
 
 [dev-dependencies]
-polars = "0.52.0"
+polars = { version = "0.52.0", default-features = false, features = [
+    "csv",
+] }

@@ -83,8 +83,11 @@ pub mod test_utils;
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use std::fs::File;
+
     use polars::prelude::*;
+
+    use super::*;
 
     #[test]
     fn test_extract_features_integration() {
@@ -240,5 +243,63 @@ mod tests {
 
         // Both groups have single values, so variance should be 0
         assert!(variances.iter().all(|&var| var == 0.0));
+    }
+
+    #[test]
+    fn test_extract_features_vs_tsfresh() {
+        // 1. Read raw S&P 500 data
+        let mut df = CsvReader::new(File::open("test_data/sp500_raw.csv").unwrap())
+            .finish()
+            .unwrap();
+
+        // Add constant ID column for single group processing
+        let height = df.height();
+        let id_column = Series::new("id".into(), vec!["single_group"; height]);
+        df.with_column(id_column).unwrap();
+
+        // 2. Extract features using kalax
+        let result = extract_features(df, "id", "date").unwrap();
+
+        // 3. Load tsfresh reference features
+        let tsfresh_df =
+            CsvReader::new(File::open("test_data/sp500_tsfresh_features.csv").unwrap())
+                .finish()
+                .unwrap();
+
+        // 4. Compare all features
+        let features_to_compare = [
+            ("close__sum_values", "close__sum_values"),
+            ("close__median", "close__median"),
+            ("close__mean", "close__mean"),
+            ("close__length", "close__length"),
+            ("close__standard_deviation", "close__standard_deviation"),
+            ("close__variance", "close__variance"),
+            ("close__root_mean_square", "close__root_mean_square"),
+            ("close__maximum", "close__maximum"),
+            ("close__absolute_maximum", "close__absolute_maximum"),
+            ("close__minimum", "close__minimum"),
+        ];
+
+        for (kalax_col, tsfresh_col) in &features_to_compare {
+            let kalax_val = result
+                .column(kalax_col)
+                .unwrap_or_else(|_| panic!("Column '{}' not found in kalax result", kalax_col))
+                .f64()
+                .unwrap()
+                .get(0)
+                .unwrap();
+
+            let tsfresh_val = tsfresh_df
+                .column(tsfresh_col)
+                .unwrap_or_else(|_| {
+                    panic!("Column '{}' not found in tsfresh reference", tsfresh_col)
+                })
+                .f64()
+                .unwrap()
+                .get(0)
+                .unwrap();
+
+            assert_float_eq!(kalax_val, tsfresh_val, 1e-5);
+        }
     }
 }

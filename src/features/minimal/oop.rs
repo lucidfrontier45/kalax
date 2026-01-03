@@ -12,6 +12,7 @@ use super::functional::{
 pub struct AbsoluteMaximum;
 
 impl AbsoluteMaximum {
+    pub const DEFAULT: Self = Self;
     pub fn new() -> Self {
         Self
     }
@@ -31,6 +32,7 @@ impl FeatureFunction for AbsoluteMaximum {
 pub struct Mean;
 
 impl Mean {
+    pub const DEFAULT: Self = Self;
     pub fn new() -> Self {
         Self
     }
@@ -50,6 +52,7 @@ impl FeatureFunction for Mean {
 pub struct Median;
 
 impl Median {
+    pub const DEFAULT: Self = Self;
     pub fn new() -> Self {
         Self
     }
@@ -69,6 +72,7 @@ impl FeatureFunction for Median {
 pub struct Variance;
 
 impl Variance {
+    pub const DEFAULT: Self = Self;
     pub fn new() -> Self {
         Self
     }
@@ -88,6 +92,7 @@ impl FeatureFunction for Variance {
 pub struct StandardDeviation;
 
 impl StandardDeviation {
+    pub const DEFAULT: Self = Self;
     pub fn new() -> Self {
         Self
     }
@@ -107,6 +112,7 @@ impl FeatureFunction for StandardDeviation {
 pub struct Length;
 
 impl Length {
+    pub const DEFAULT: Self = Self;
     pub fn new() -> Self {
         Self
     }
@@ -126,6 +132,7 @@ impl FeatureFunction for Length {
 pub struct Maximum;
 
 impl Maximum {
+    pub const DEFAULT: Self = Self;
     pub fn new() -> Self {
         Self
     }
@@ -145,6 +152,7 @@ impl FeatureFunction for Maximum {
 pub struct Minimum;
 
 impl Minimum {
+    pub const DEFAULT: Self = Self;
     pub fn new() -> Self {
         Self
     }
@@ -164,6 +172,7 @@ impl FeatureFunction for Minimum {
 pub struct RootMeanSquare;
 
 impl RootMeanSquare {
+    pub const DEFAULT: Self = Self;
     pub fn new() -> Self {
         Self
     }
@@ -183,6 +192,7 @@ impl FeatureFunction for RootMeanSquare {
 pub struct SumValues;
 
 impl SumValues {
+    pub const DEFAULT: Self = Self;
     pub fn new() -> Self {
         Self
     }

@@ -1,4 +1,5 @@
 pub mod features;
+pub mod polars;
 
-#[macro_use]
+#[cfg(test)]
 pub mod test_utils;

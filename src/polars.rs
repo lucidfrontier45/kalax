@@ -224,7 +224,7 @@ pub fn assemble_result_dataframe(
                     .iter()
                     .find(|(name, _)| name == feature_name)
                     .map(|(_, value)| *value)
-                    .unwrap_or(0.0) // Default value if feature not found
+                    .unwrap() // TODO handle missing features gracefully
             })
             .collect();
 

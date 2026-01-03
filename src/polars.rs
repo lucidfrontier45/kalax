@@ -259,7 +259,7 @@ pub fn assemble_result_dataframe(
 /// # Example
 ///
 /// ```rust
-/// use kalax::extract_features;
+/// use kalax::polars::extract_features;
 /// use polars::prelude::*;
 ///
 /// let df = df!(

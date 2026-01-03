@@ -23,11 +23,11 @@ use crate::features::{
 /// # Errors
 ///
 /// Returns error if required columns are missing from the DataFrame
-pub fn validate_and_prepare_dataframe(
+pub fn validate_dataframe(
     df: &DataFrame,
     column_id: &str,
     column_sort: &str,
-) -> Result<(DataFrame, Vec<String>), Box<dyn std::error::Error>> {
+) -> Result<Vec<String>, Box<dyn std::error::Error>> {
     // Check that required columns exist
     let columns = df.get_column_names();
 
@@ -50,7 +50,7 @@ pub fn validate_and_prepare_dataframe(
         return Err("No feature columns found after excluding ID and sort columns".into());
     }
 
-    Ok((df.clone(), feature_columns))
+    Ok(feature_columns)
 }
 
 /// Partitions DataFrame by unique values in the ID column.
@@ -285,11 +285,10 @@ pub fn extract_features(
     column_sort: &str,
 ) -> Result<DataFrame, Box<dyn std::error::Error>> {
     // 1. Validate input and get feature columns
-    let (validated_df, feature_columns) =
-        validate_and_prepare_dataframe(&df, column_id, column_sort)?;
+    let feature_columns = validate_dataframe(&df, column_id, column_sort)?;
 
     // 2. Get partitioned DataFrames by ID
-    let partitions = get_partitioned_dataframes(validated_df, column_id)?;
+    let partitions = get_partitioned_dataframes(df, column_id)?;
 
     // 3. Process each partition and extract features
     let mut group_results = Vec::new();
@@ -328,10 +327,10 @@ mod tests {
         )
         .unwrap();
 
-        let result = validate_and_prepare_dataframe(&df, "id", "timestamp");
+        let result = validate_dataframe(&df, "id", "timestamp");
         assert!(result.is_ok());
 
-        let (_, feature_columns) = result.unwrap();
+        let feature_columns = result.unwrap();
         assert_eq!(feature_columns, vec!["value1", "value2"]);
     }
 
@@ -343,7 +342,7 @@ mod tests {
         )
         .unwrap();
 
-        let result = validate_and_prepare_dataframe(&df, "id", "timestamp");
+        let result = validate_dataframe(&df, "id", "timestamp");
         assert!(result.is_err());
     }
 
@@ -355,7 +354,7 @@ mod tests {
         )
         .unwrap();
 
-        let result = validate_and_prepare_dataframe(&df, "id", "timestamp");
+        let result = validate_dataframe(&df, "id", "timestamp");
         assert!(result.is_err());
     }
 

@@ -145,7 +145,7 @@ pub fn process_single_group(
     id: &str,
     column_sort: &str,
     feature_columns: &[String],
-) -> Result<(String, Vec<(String, f64)>), Box<dyn std::error::Error>> {
+) -> Result<(String, Vec<(String, f64)>), PolarsError> {
     // Sort the group DataFrame by the sort column
     let sorted_df = group_df.sort([column_sort], Default::default())?;
 

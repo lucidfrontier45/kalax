@@ -9,7 +9,10 @@ polars = { version = "0.52.0", default-features = false, features = [
     "lazy",
     "partition_by",
     "timezones",    # temporarily add timezones feature to avoid issue https://github.com/pola-rs/polars/issues/25148
-] }
+], optional = true }
+
+[features]
+polars = ["dep:polars"]
 
 [dev-dependencies]
 polars = { version = "0.52.0", default-features = false, features = ["csv"] }

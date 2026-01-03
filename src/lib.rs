@@ -1,4 +1,6 @@
 pub mod features;
+
+#[cfg(feature = "polars")]
 pub mod polars;
 
 #[cfg(test)]

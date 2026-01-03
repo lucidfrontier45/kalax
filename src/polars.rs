@@ -472,11 +472,9 @@ mod tests {
         assert_eq!(result_df.height(), 2); // 2 groups (A and B)
 
         // Check that ID column exists
-        assert!(
-            result_df
-                .get_column_names()
-                .contains(&&PlSmallStr::from_str("id"))
-        );
+        assert!(result_df
+            .get_column_names()
+            .contains(&&PlSmallStr::from_str("id")));
 
         // Check that feature columns follow naming convention
         let columns = result_df.get_column_names();
@@ -487,16 +485,12 @@ mod tests {
             .collect();
 
         // Should have features for both value1 and value2
-        assert!(
-            feature_columns
-                .iter()
-                .any(|col| col.starts_with("value1__"))
-        );
-        assert!(
-            feature_columns
-                .iter()
-                .any(|col| col.starts_with("value2__"))
-        );
+        assert!(feature_columns
+            .iter()
+            .any(|col| col.starts_with("value1__")));
+        assert!(feature_columns
+            .iter()
+            .any(|col| col.starts_with("value2__")));
 
         // Check specific expected features
         let expected_features = [

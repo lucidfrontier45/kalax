@@ -294,10 +294,16 @@ pub fn extract_features(
     // 3. Process each partition and extract features
     let mut group_results = Vec::new();
     for (id, group_df) in partitions {
-        if let Ok(result) = process_single_group(&group_df, &id, column_sort, &feature_columns) {
-            group_results.push(result);
+        match process_single_group(&group_df, &id, column_sort, &feature_columns) {
+            Ok(result) => {
+                group_results.push(result);
+            }
+            Err(e) => {
+                // Log errors to avoid silently skipping non-empty groups
+                eprintln!("Warning: failed to process group '{}': {}", id, e);
+                // Skip groups that fail processing (including empty groups) as per requirement
+            }
         }
-        // Skip empty groups as per requirement
     }
 
     // 4. Assemble final result DataFrame

@@ -110,17 +110,17 @@ pub fn apply_features_to_series(series: &[f64], column_name: &str) -> Vec<(Strin
     let mut results = Vec::new();
 
     // All available feature functions from the minimal module
-    let feature_functions: Vec<Box<dyn FeatureFunction>> = vec![
-        Box::new(AbsoluteMaximum::new()),
-        Box::new(Length::new()),
-        Box::new(Maximum::new()),
-        Box::new(Mean::new()),
-        Box::new(Median::new()),
-        Box::new(Minimum::new()),
-        Box::new(RootMeanSquare::new()),
-        Box::new(StandardDeviation::new()),
-        Box::new(SumValues::new()),
-        Box::new(Variance::new()),
+    let feature_functions: Vec<&dyn FeatureFunction> = vec![
+        &AbsoluteMaximum::DEFAULT,
+        &Length::DEFAULT,
+        &Maximum::DEFAULT,
+        &Mean::DEFAULT,
+        &Median::DEFAULT,
+        &Minimum::DEFAULT,
+        &RootMeanSquare::DEFAULT,
+        &StandardDeviation::DEFAULT,
+        &SumValues::DEFAULT,
+        &Variance::DEFAULT,
     ];
 
     for feature_fn in feature_functions {

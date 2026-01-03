@@ -71,29 +71,19 @@ pub fn get_partitioned_dataframes(
     df: DataFrame,
     column_id: &str,
 ) -> Result<Vec<(String, DataFrame)>, Box<dyn std::error::Error>> {
-    // Get unique ID values first
-    let id_series = df.column(column_id)?.cast(&DataType::String)?;
-    let id_values = id_series
-        .unique()?
-        .str()?
-        .into_no_null_iter()
-        .map(|s| s.to_string())
-        .collect::<Vec<_>>();
-
-    let mut result = Vec::new();
-
-    let df = df.lazy();
-
-    //TODO current implementation is a simple filtering, later we will use searchsorted partitions for performance
-    for id_value in id_values {
-        // Filter DataFrame for this specific ID value
-        let expr = col(column_id).eq(lit(id_value.clone()));
-        let filtered_df = df.clone().filter(expr).collect()?;
-
-        result.push((id_value, filtered_df));
-    }
-
-    Ok(result)
+    let partitioned = df
+        .partition_by([column_id], true)?
+        .into_iter()
+        .map(|mut group_df| {
+            // all raw values in the ID column are the same for this group
+            // just take the first value as the ID and remove the column from the group DataFrame
+            let id_series = group_df.column(column_id).unwrap();
+            let id_value = id_series.get(0).unwrap().extract_str().unwrap().to_string();
+            group_df.drop_in_place(column_id).unwrap();
+            (id_value, group_df)
+        })
+        .collect();
+    Ok(partitioned)
 }
 
 /// Applies all feature extraction functions to a single time series.

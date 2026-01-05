@@ -18,7 +18,7 @@ pub fn extract_features(
 ) -> Vec<HashMap<String, HashMap<String, f64>>> {
     // apply minimal feature set
 
-    let feature_func = MinimalFeatureSet {};
+    let feature_func = MinimalFeatureSet::new();
     data.par_iter()
         .map(|row| {
             row.par_iter()

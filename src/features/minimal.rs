@@ -12,6 +12,6 @@ pub use functional::{
     sum_values, variance,
 };
 pub use oop::{
-    AbsoluteMaximum, Length, Maximum, Mean, Median, Minimum, RootMeanSquare, StandardDeviation,
-    SumValues, Variance,
+    AbsoluteMaximum, Length, Maximum, Mean, Median, MinimalFeatureSet, Minimum, RootMeanSquare,
+    StandardDeviation, SumValues, Variance,
 };

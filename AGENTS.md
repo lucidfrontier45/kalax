@@ -1,12 +1,12 @@
 # Kalax Development Guide
 
-This guide provides essential information for AI agents working on the Kalax codebase. Kalax is a Rust library for time series feature extraction, designed to work with Polars DataFrames and provide Python bindings.
+This guide provides essential information for AI agents working on the Kalax codebase. Kalax is a Rust library for time series feature extraction with both functional and object-oriented APIs.
 
 ## Project Overview
 
 - **Language**: Rust (2024 edition)
 - **Purpose**: Time series feature extraction library
-- **Architecture**: Core Rust library with planned Polars integration and Python bindings
+- **Architecture**: Core Rust library with planned Python bindings
 - **Dependencies**: Minimal (currently none beyond std)
 
 ## Build Commands
@@ -95,7 +95,7 @@ cargo doc --open              # Generate and open documentation in browser
 use std::collections::HashMap;
 
 // External crate imports
-use polars::prelude::{DataFrame, Series};
+// use polars::prelude::{DataFrame, Series};  // Polars integration removed
 
 // Local crate imports
 use crate::features::{mean, extract_features};
@@ -146,7 +146,7 @@ src/
     statistical.rs    # Statistical features (mean, std, etc.)
     temporal.rs       # Time-based features
     structural.rs     # Structural features
-  dataframe.rs        # Polars DataFrame integration
+  # dataframe.rs        # Polars DataFrame integration (removed)
   python.rs           # Python bindings (future)
 ```
 
@@ -179,11 +179,10 @@ pub fn extract_features(series: &[f64]) -> HashMap<String, f64> {
 
 ### Integration Patterns
 
-#### Polars DataFrame Integration
-- Provide functions that operate on DataFrame columns
-- Support both eager and lazy evaluation
-- Handle missing values appropriately
-- Return results in DataFrame-compatible formats
+#### Polars DataFrame Integration (Removed)
+- Polars integration was removed to focus on core functionality
+- The library now focuses on `&[f64]` and `Vec<HashMap<String, f64>>` inputs
+- Future integration may be reconsidered based on user demand
 
 #### Python Bindings (Future)
 - Use PyO3 for Python integration
@@ -201,7 +200,7 @@ pub fn extract_features(series: &[f64]) -> HashMap<String, f64> {
 
 #### Testing Strategy
 - Unit tests for individual functions
-- Integration tests for DataFrame operations
+- Integration tests for batch operations on Vec<HashMap<String, f64>>
 - Property-based tests for mathematical correctness
 - Benchmark tests for performance-critical code
 

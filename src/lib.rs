@@ -1,7 +1,6 @@
+pub mod extractor;
 pub mod features;
 
-#[cfg(feature = "polars")]
-pub mod polars;
-
+pub use extractor::extract_features;
 #[cfg(test)]
 pub mod test_utils;

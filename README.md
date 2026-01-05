@@ -12,68 +12,102 @@ The terminal "x" stands for Extraction. Together, Kalax signifies the "Signs of 
 
 ## Features
 
-### Core Features (Always Available)
 - **Statistical Features**: Mean, median, variance, standard deviation, minimum, maximum, absolute maximum, root mean square, sum values, and length
-- **High Performance**: Optimized for time series operations on `&[f64]` slices
+- **Dual API Design**: Both functional and object-oriented APIs for flexibility
+- **High Performance**: Optimized for time series operations on `&[f64]` slices with parallel processing
 - **Type Safety**: Strong typing throughout the library with comprehensive error handling
 - **Memory Efficient**: Minimal allocations in hot paths, designed for large datasets
-
-### Optional Polars Integration (`polars` feature)
-When the `polars` feature is enabled, Kalax provides seamless integration with Polars DataFrames:
-
-- **DataFrame Support**: Extract features from DataFrames with automatic grouping and sorting
-- **Batch Processing**: Process multiple time series groups efficiently
-- **Flexible Column Selection**: Automatically identify feature columns or specify custom selections
-- **Result Assembly**: Create result DataFrames with properly named feature columns
+- **Batch Processing**: Extract features from multiple time series efficiently using parallel execution
 
 ## Installation
 
 Add Kalax to your `Cargo.toml`:
 
-### Basic Usage (Core Features Only)
 ```toml
 [dependencies]
 kalax = "0.1.0"
 ```
 
-### With Polars Integration
-```toml
-[dependencies]
-kalax = { version = "0.1.0", features = ["polars"] }
-```
-
 ## Usage
 
-### Core Feature Extraction
+Kalax provides two API styles: functional and object-oriented.
+
+### Functional API
+
+Simple function calls for individual features:
+
+```rust
+use kalax::features::minimal::{mean, variance, standard_deviation};
+
+let time_series = vec![1.0, 2.0, 3.0, 4.0, 5.0];
+let mean_value = mean(&time_series);
+let variance_value = variance(&time_series);
+let std_dev = standard_deviation(&time_series);
+
+println!("Mean: {}", mean_value);           // 3.0
+println!("Variance: {}", variance_value);    // 2.0
+println!("Std Dev: {}", std_dev);           // ~1.414
+```
+
+### Object-Oriented API
+
+Use the `FeatureFunction` trait for more structured code:
 
 ```rust
 use kalax::features::{minimal::Mean, common::FeatureFunction};
 
 let time_series = vec![1.0, 2.0, 3.0, 4.0, 5.0];
-let mean_value = Mean::DEFAULT.apply(&time_series);
-println!("Mean: {}", mean_value[0].value); // 3.0
+let result = Mean::DEFAULT.apply(&time_series);
+println!("{}: {}", result[0].name, result[0].value); // mean: 3.0
 ```
 
-### Polars DataFrame Integration (requires `polars` feature)
+### Extract All Minimal Features
+
+Use `MinimalFeatureSet` to extract all supported features at once:
 
 ```rust
-use kalax::polars::extract_features;
-use polars::prelude::*;
+use kalax::features::{minimal::MinimalFeatureSet, common::FeatureFunction};
 
-// Create a DataFrame with time series data
-let df = df!(
-    "id" => &["A", "A", "B", "B"],
-    "time" => &[1, 2, 1, 2],
-    "value1" => &[1.0, 2.0, 3.0, 4.0],
-    "value2" => &[5.0, 6.0, 7.0, 8.0]
-).unwrap();
+let time_series = vec![1.0, 2.0, 3.0, 4.0, 5.0];
+let features = MinimalFeatureSet::new().apply(&time_series);
 
-// Extract features grouped by 'id', sorted by 'time'
-let result = extract_features(df, "id", "time")?;
-// Result DataFrame has columns: id, value1__mean, value1__length, value1__variance, etc.
+for feature in features {
+    println!("{}: {}", feature.name, feature.value);
+}
+// Output: absolute_maximum, mean, median, variance, standard_deviation,
+//         length, maximum, minimum, root_mean_square, sum_values
+```
+
+### Batch Processing
+
+Process multiple time series efficiently using the extractor:
+
+```rust
+use std::collections::HashMap;
+use kalax::extract_features;
+
+// Prepare data as a vector of HashMaps (column name -> time series values)
+let data = vec![
+    HashMap::from([
+        ("sensor1".to_string(), vec![1.0, 2.0, 3.0]),
+        ("sensor2".to_string(), vec![4.0, 5.0, 6.0]),
+    ]),
+    HashMap::from([
+        ("sensor1".to_string(), vec![7.0, 8.0, 9.0]),
+        ("sensor2".to_string(), vec![10.0, 11.0, 12.0]),
+    ]),
+];
+
+// Extract features in parallel
+let results = extract_features(&data);
+
+// results[0]["sensor1"] contains features for sensor1 from the first series
+// results[1]["sensor2"] contains features for sensor2 from the second series
 ```
 
 ## Available Features
+
+All features are available through both the functional and OOP APIs.
 
 ### Statistical Features
 - **Mean**: Average value of the time series
@@ -87,32 +121,45 @@ let result = extract_features(df, "id", "time")?;
 - **Sum Values**: Sum of all values
 - **Length**: Number of data points
 
-### Polars Integration Features
-- **Automatic Column Detection**: Identifies feature columns automatically
-- **Group-wise Processing**: Process multiple time series groups
-- **Sorting**: Automatically sorts time series by specified column
-- **Result Assembly**: Creates structured output DataFrames
-- **Error Handling**: Comprehensive error reporting
+### API Styles
+
+#### Functional API
+Import and call functions directly:
+```rust
+use kalax::features::minimal::{mean, median, variance};
+let m = mean(&series);
+```
+
+#### OOP API
+Use feature structs and the `FeatureFunction` trait:
+```rust
+use kalax::features::{minimal::Mean, common::FeatureFunction};
+let result = Mean::DEFAULT.apply(&series);
+```
 
 ## Performance
 
 Kalax is designed for high-performance time series analysis:
 
+- **Parallel Processing**: Uses Rayon for parallel feature extraction across multiple time series
 - **Memory Efficient**: Minimal allocations in feature extraction
 - **Optimized Algorithms**: Efficient implementations of statistical features
-- **Scalable**: Handles large datasets effectively
-- **Zero-Copy Operations**: When possible, operates on data without copying
+- **Zero-Copy Operations**: Operates on `&[f64]` slices without copying data
+- **Scalable**: Handles large datasets effectively with batch processing
 
 ## Testing
 
 Run the test suite:
 
 ```bash
-# Test core features
+# Run all tests
 cargo test
 
-# Test with Polars integration
-cargo test --features polars
+# Run specific test
+cargo test test_minimal_extractor
+
+# Show test output
+cargo test -- --nocapture
 ```
 
 ## Development
@@ -128,10 +175,22 @@ cargo check                   # Quick compilation check
 ```bash
 cargo clippy                  # Run linter
 cargo fmt                     # Format code
+cargo clippy --fix            # Auto-fix linter warnings
 ```
 
-### Feature Development
-The library uses conditional compilation for optional features. Core functionality is always available, while the Polars integration is enabled via the `polars` feature flag.
+### Documentation
+```bash
+cargo doc                     # Generate documentation
+cargo doc --open              # Generate and open in browser
+```
+
+### API Design Philosophy
+Kalax provides two API styles to accommodate different use cases:
+
+- **Functional API**: Best for simple, one-off feature extraction where you need direct access to specific features
+- **OOP API**: Best when you need consistent interfaces, want to chain features, or need to work with feature collections
+
+Both APIs provide identical performance; the choice is primarily about code organization and developer preference.
 
 ## License
 
@@ -143,12 +202,13 @@ Contributions are welcome! Please ensure:
 - Code follows Rust conventions and passes `cargo clippy`
 - All tests pass
 - Documentation is updated for new features
-- Changes respect the feature flag system
+- New features include both functional and OOP implementations
 
 ## Comparison with tsfresh
 
-Kalax provides a subset of features comparable to Python's tsfresh library, but with:
-- **Better Performance**: Rust's zero-cost abstractions and efficient memory management
+Kalax provides a subset of features comparable to Python's tsfresh library, with focus on core statistical features. Key advantages:
+- **Better Performance**: Rust's zero-cost abstractions, efficient memory management, and parallel processing
 - **Type Safety**: Compile-time guarantees and comprehensive error handling
 - **Memory Efficiency**: Minimal allocations and optimized data structures
-- **Easy Integration**: Simple Rust-native API with optional Polars support
+- **Dual API**: Both functional and object-oriented APIs for flexibility
+- **Validation**: Features tested against tsfresh reference implementation for correctness

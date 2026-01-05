@@ -4,15 +4,8 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-ndarray = "0.17.1"
-polars = { version = "0.52.0", default-features = false, features = [
-    "lazy",
-    "partition_by",
-    "timezones",    # temporarily add timezones feature to avoid issue https://github.com/pola-rs/polars/issues/25148
-], optional = true }
-
-[features]
-polars = ["dep:polars"]
+rayon = "1.11.0"
 
 [dev-dependencies]
-polars = { version = "0.52.0", default-features = false, features = ["csv"] }
+serde = { version = "1.0.228", features = ["derive"] }
+serdeio = { version = "0.5.0", features = ["csv"] }

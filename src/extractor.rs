@@ -5,8 +5,14 @@ use rayon::prelude::*;
 use crate::features::{common::FeatureFunction as _, minimal::MinimalFeatureSet};
 
 /// Extracts features from the given data.
+/// 
 /// # Arguments
 /// * `data` - A slice of HashMaps where each HashMap represents multiple columns
+///
+/// # Returns
+/// A vector where each element corresponds to an input `HashMap`. Each result
+/// contains column names mapped to their extracted features, with each feature
+/// map using `feature name -> feature value`.
 pub fn extract_features(
     data: &[HashMap<String, Vec<f64>>],
 ) -> Vec<HashMap<String, HashMap<String, f64>>> {

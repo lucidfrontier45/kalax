@@ -207,6 +207,7 @@ impl FeatureFunction for SumValues {
     }
 }
 
+/// Aggregates and computes all minimal feature functions for a given time series.
 #[derive(Default)]
 pub struct MinimalFeatureSet {}
 

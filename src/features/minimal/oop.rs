@@ -207,6 +207,34 @@ impl FeatureFunction for SumValues {
     }
 }
 
+#[derive(Default)]
+pub struct MinimalFeatureSet {}
+
+impl MinimalFeatureSet {
+    pub fn new() -> Self {
+        Self {}
+    }
+}
+
+impl FeatureFunction for MinimalFeatureSet {
+    fn apply(&self, series: &[f64]) -> Vec<FeatureFunctionReturn> {
+        let mut results = Vec::new();
+
+        results.extend(AbsoluteMaximum::DEFAULT.apply(series));
+        results.extend(Mean::DEFAULT.apply(series));
+        results.extend(Median::DEFAULT.apply(series));
+        results.extend(Variance::DEFAULT.apply(series));
+        results.extend(StandardDeviation::DEFAULT.apply(series));
+        results.extend(Length::DEFAULT.apply(series));
+        results.extend(Maximum::DEFAULT.apply(series));
+        results.extend(Minimum::DEFAULT.apply(series));
+        results.extend(RootMeanSquare::DEFAULT.apply(series));
+        results.extend(SumValues::DEFAULT.apply(series));
+
+        results
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

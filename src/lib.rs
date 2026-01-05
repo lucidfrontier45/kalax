@@ -1,3 +1,4 @@
+pub mod extractor;
 pub mod features;
 
 #[cfg(test)]

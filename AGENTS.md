@@ -6,8 +6,8 @@ This guide provides essential information for AI agents working on the Kalax cod
 
 - **Language**: Rust (2024 edition)
 - **Purpose**: Time series feature extraction library
-- **Architecture**: Core Rust library with planned Python bindings
-- **Dependencies**: Minimal (currently none beyond std)
+- **Architecture**: Core Rust library with dual API design (functional + OOP), Rayon-based parallel batch processing, planned Python bindings
+- **Dependencies**: Minimal (Rayon for parallelization, serde/serdeio for testing)
 
 ## Build Commands
 
@@ -120,7 +120,7 @@ use super::common::{validate_input, Error};
 - Write unit tests for all public functions
 - Use descriptive test names (e.g., `test_calculate_mean_with_empty_slice`)
 - Test edge cases (empty inputs, boundary values)
-- Use `assert_float_eq!` for floating-point comparisons (defined in `test_utils.rs`)
+- Use `assert_float_eq!` for floating-point comparisons (exported from lib.rs as macro)
 - Test error conditions appropriately
 
 ### Type Safety
@@ -129,25 +129,26 @@ use super::common::{validate_input, Error};
 - Use `&[f64]` for time series data (matches tsfresh convention)
 - Avoid `as` casts; use explicit conversions
 
-### Performance Considerations
-- Optimize for time series operations on `&[f64]`
-- Minimize allocations in hot paths
+#### Performance Considerations
+- Use Rayon for parallel processing across multiple time series
+- Operate on slices `&[f64]` for minimal allocations
 - Use iterators where possible
 - Consider cache efficiency for numerical computations
-- use `ndarray::ArrayView1` if necessary.
 
 ### Code Organization
 
 #### File Structure
 ```
 src/
-  lib.rs              # Main library file
+  lib.rs              # Main library file, re-exports
+  extractor.rs        # Batch feature extraction API
   features/           # Feature extraction modules
-    statistical.rs    # Statistical features (mean, std, etc.)
-    temporal.rs       # Time-based features
-    structural.rs     # Structural features
-  # dataframe.rs        # Polars DataFrame integration (removed)
-  python.rs           # Python bindings (future)
+    common.rs         # Traits and common structures
+    minimal.rs        # Minimal feature set re-exports
+    minimal/          # Minimal feature implementations
+      functional.rs  # Functional API (10 features)
+      oop.rs        # Object-Oriented API (10 structs + MinimalFeatureSet)
+  test_utils.rs       # Testing utilities (assert_float_eq! macro)
 ```
 
 #### Module Organization
@@ -155,6 +156,24 @@ src/
 - Use clear module boundaries
 - Re-export important items in `lib.rs`
 - **NEVER use `mod.rs` files** - Prefer directory-style modules with `directory_name.rs` files instead
+
+### Implemented Features
+
+#### Statistical Features (Minimal Feature Set)
+The library implements 10 core statistical features, available through both APIs:
+
+1. **Mean** (`mean`, `Mean`) - Arithmetic average of time series values
+2. **Median** (`median`, `Median`) - Middle value when time series is sorted
+3. **Variance** (`variance`, `Variance`) - Measure of spread using population variance
+4. **Standard Deviation** (`standard_deviation`, `StandardDeviation`) - Square root of variance
+5. **Minimum** (`minimum`, `Minimum`) - Smallest value in time series
+6. **Maximum** (`maximum`, `Maximum`) - Largest value in time series
+7. **Absolute Maximum** (`absolute_maximum`, `AbsoluteMaximum`) - Largest absolute value
+8. **Root Mean Square** (`root_mean_square`, `RootMeanSquare`) - RMS value
+9. **Sum Values** (`sum_values`, `SumValues`) - Sum of all time series values
+10. **Length** (`length`, `Length`) - Number of data points in time series
+
+All features operate on `&[f64]` slices for memory efficiency and return `f64` values (functional API) or `FeatureFunctionReturn` structs (OOP API).
 
 ### Feature Extraction Patterns
 
@@ -165,24 +184,57 @@ pub fn mean(series: &[f64]) -> f64 {
     // Implementation
 }
 
-/// Extract multiple features from a time series
-pub fn extract_features(series: &[f64]) -> HashMap<String, f64> {
+/// Extract multiple features from multiple time series in parallel
+pub fn extract_features(data: &[HashMap<String, &[f64]>]) -> Vec<HashMap<String, HashMap<String, f64>>> {
     // Implementation
 }
 ```
 
 #### Return Types
-- Use `f64` for scalar features
-- Use `Vec<f64>` for multi-valued features
+- Use `f64` for scalar features (functional API)
+- Use `Vec<FeatureFunctionReturn>` for structured results (OOP API)
 - Use `HashMap<String, f64>` for named feature collections
+- Use `Vec<HashMap<String, HashMap<String, f64>>>` for batch processing results
 - Return `Result<T, E>` for operations that can fail
 
 ### Integration Patterns
 
-#### Polars DataFrame Integration (Removed)
-- Polars integration was removed to focus on core functionality
-- The library now focuses on `&[f64]` and `Vec<HashMap<String, f64>>` inputs
-- Future integration may be reconsidered based on user demand
+#### Batch Processing API
+- Use `extract_features()` function for parallel processing of multiple time series
+- Input format: `&[HashMap<String, &[f64]>]` - vector of time series collections
+- Output format: `Vec<HashMap<String, HashMap<String, f64>>>` - batch results with named features
+- Rayon-based parallelization across multiple time series for optimal performance
+
+#### Usage Examples
+
+##### Batch Feature Extraction
+```rust
+use std::collections::HashMap;
+use kalax::extract_features;
+
+// Prepare data as vector of HashMaps (column name -> time series values)
+let data = vec![
+    HashMap::from([
+        ("sensor1".to_string(), vec![1.0, 2.0, 3.0]),
+        ("sensor2".to_string(), vec![4.0, 5.0, 6.0]),
+    ]),
+    HashMap::from([
+        ("sensor1".to_string(), vec![7.0, 8.0, 9.0]),
+        ("sensor2".to_string(), vec![10.0, 11.0, 12.0]),
+    ]),
+];
+
+// Extract features in parallel
+let results = extract_features(&data);
+
+// results[0]["sensor1"] contains features for sensor1 from first series
+// results[1]["sensor2"] contains features for sensor2 from second series
+```
+
+#### Future Integration Options
+- Python bindings planned via PyO3 for ML ecosystem integration
+- Data library integration (Polars, Arrow) may be reconsidered based on user demand
+- Current focus on core `&[f64]` slice operations for maximum performance
 
 #### Python Bindings (Future)
 - Use PyO3 for Python integration

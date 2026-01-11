@@ -81,24 +81,25 @@ use super::common::{validate_input, Error};
 - Avoid `as` casts; use explicit conversions
 
 ## Performance Considerations
-- Optimize for time series operations on `&[f64]`
-- Minimize allocations in hot paths
+- Use Rayon for parallel processing across multiple time series
+- Operate on slices `&[f64]` for minimal allocations
 - Use iterators where possible
 - Consider cache efficiency for numerical computations
-- use `ndarray::ArrayView1` if necessary.
 
 ## Code Organization
 
 ### File Structure
 ```
 src/
-  lib.rs              # Main library file
+  lib.rs              # Main library file, re-exports
+  extractor.rs        # Batch feature extraction API
   features/           # Feature extraction modules
-    statistical.rs    # Statistical features (mean, std, etc.)
-    temporal.rs       # Time-based features
-    structural.rs     # Structural features
-  dataframe.rs        # Polars DataFrame integration
-  python.rs           # Python bindings (future)
+    common.rs         # Traits and common structures
+    minimal.rs        # Minimal feature set re-exports
+    minimal/          # Minimal feature implementations
+      functional.rs  # Functional API (10 features)
+      oop.rs        # Object-Oriented API (10 structs + MinimalFeatureSet)
+  test_utils.rs       # Testing utilities (assert_float_eq! macro)
 ```
 
 ### Module Organization

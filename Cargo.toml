@@ -1,11 +1,4 @@
-[package]
-name = "kalax"
-version = "0.1.0"
-edition = "2024"
-
-[dependencies]
-rayon = "1.11.0"
-
-[dev-dependencies]
-serde = { version = "1.0.228", features = ["derive"] }
-serdeio = { version = "0.5.0", features = ["csv"] }
+[workspace]
+members = ["core", "pybind"]
+default-members = ["core"]
+resolver = "3"

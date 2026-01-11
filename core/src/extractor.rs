@@ -73,7 +73,7 @@ mod tests {
 
     #[test]
     fn test_minimal_extractor() {
-        let mut records: Vec<DataRecord> = read_records_from_file("test_data/sp500_raw.csv")
+        let mut records: Vec<DataRecord> = read_records_from_file("../test_data/sp500_raw.csv")
             .expect("failed to read sp500 raw data");
         records.sort_by(|a, b| a.date.cmp(&b.date));
         // convert to HashMap<String, Vec<f64>>
@@ -83,7 +83,7 @@ mod tests {
         )]);
         let x_view: HashMap<String, &[f64]> =
             x.iter().map(|(k, v)| (k.clone(), v.as_slice())).collect();
-        let y_true = read_tsfresh_result("test_data/sp500_tsfresh_features.csv");
+        let y_true = read_tsfresh_result("../test_data/sp500_tsfresh_features.csv");
         let y = extract_features(&[x_view]);
         let y_close = &y[0]["close"];
         for (feature_name, true_value) in y_true {

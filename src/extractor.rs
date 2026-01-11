@@ -5,7 +5,7 @@ use rayon::prelude::*;
 use crate::features::{common::FeatureFunction as _, minimal::MinimalFeatureSet};
 
 /// Extracts features from the given data.
-/// 
+///
 /// # Arguments
 /// * `data` - A slice of HashMaps where each HashMap represents multiple columns
 ///
@@ -14,7 +14,7 @@ use crate::features::{common::FeatureFunction as _, minimal::MinimalFeatureSet};
 /// contains column names mapped to their extracted features, with each feature
 /// map using `feature name -> feature value`.
 pub fn extract_features(
-    data: &[HashMap<String, Vec<f64>>],
+    data: &[HashMap<String, &[f64]>],
 ) -> Vec<HashMap<String, HashMap<String, f64>>> {
     // apply minimal feature set
 
@@ -79,10 +79,12 @@ mod tests {
         // convert to HashMap<String, Vec<f64>>
         let x = HashMap::from([(
             "close".to_string(),
-            records.iter().map(|rec| rec.close).collect(),
+            records.iter().map(|rec| rec.close).collect::<Vec<f64>>(),
         )]);
+        let x_view: HashMap<String, &[f64]> =
+            x.iter().map(|(k, v)| (k.clone(), v.as_slice())).collect();
         let y_true = read_tsfresh_result("test_data/sp500_tsfresh_features.csv");
-        let y = extract_features(&[x]);
+        let y = extract_features(&[x_view]);
         let y_close = &y[0]["close"];
         for (feature_name, true_value) in y_true {
             let extracted_value = y_close

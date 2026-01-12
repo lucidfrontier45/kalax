@@ -2,3 +2,12 @@
 members = ["core", "pybind"]
 default-members = ["core"]
 resolver = "3"
+
+[workspace.package]
+authors = ["Du Shiqiao <lucidfrontier.45@gmail.com>"]
+description = "High-performance time series feature extraction library"
+homepage = "https://github.com/lucidfrontier45/kalax"
+repository = "https://github.com/lucidfrontier45/kalax"
+documentation = "https://docs.rs/kalax"
+readme = "README.md"
+license-file = "LICENSE"

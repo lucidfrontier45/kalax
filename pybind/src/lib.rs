@@ -1,8 +1,8 @@
 use pyo3::prelude::*;
 
 /// A Python module implemented in Rust.
-#[pymodule]
-mod kalax {
+#[pymodule(name = "kalax")]
+mod kalax_pybind {
     use std::collections::HashMap;
 
     use numpy::PyReadonlyArray1;
@@ -20,7 +20,7 @@ mod kalax {
                     .collect()
             })
             .collect();
-        let features = kalax_core::extract_features(&x?);
+        let features = kalax::extract_features(&x?);
         Ok(features)
     }
 }

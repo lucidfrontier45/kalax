@@ -4,15 +4,36 @@ build-backend = "maturin"
 
 [project]
 name = "kalax"
-requires-python = ">=3.12"
+license = "MIT"
+license-files = ["LICENSE"]
+readme = "python_api.md"
+authors = [{ name = "Du Shiqiao", email = "lucidfrontier.45@gmail.com" }]
+description = "High-performance time series feature extraction library with parallel processing"
 classifiers = [
     "Programming Language :: Rust",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Programming Language :: Python :: Implementation :: CPython",
-    "Programming Language :: Python :: Implementation :: PyPy",
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Mathematics",
+]
+keywords = [
+    "time-series",
+    "feature-extraction",
+    "statistics",
+    "machine-learning",
+    "data-science",
 ]
 dynamic = ["version"]
+requires-python = ">=3.12"
 dependencies = ["numpy>=2.0.0"]
-license.file = "LICENSE"
+
+[project.urls]
+Homepage = "https://github.com/lucidfrontier45/kalax"
+Repository = "https://github.com/lucidfrontier45/kalax"
 
 [tool.maturin]
 manifest-path = "pybind/Cargo.toml"

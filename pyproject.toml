@@ -12,6 +12,7 @@ classifiers = [
 ]
 dynamic = ["version"]
 dependencies = ["numpy>=2.0.0"]
+license.file = "LICENSE"
 
 [tool.maturin]
 manifest-path = "pybind/Cargo.toml"
